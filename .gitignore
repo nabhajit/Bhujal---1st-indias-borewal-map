@@ -34,7 +34,7 @@ pip-delete-this-directory.txt
 node_modules/
 
 # Static and media files (if you generate these files locally and not uploading them)
-staticfiles/
+# staticfiles/
 media/
 
 # Ignore OS and editor specific files
