@@ -11,8 +11,6 @@ source venv/bin/activate
 # install all deps in the venv
 pip install -r requirements.txt
 
-mkdir -p staticfiles
-
 # collect static files using the Python interpreter from venv
 python3.9 manage.py collectstatic --noinput
 

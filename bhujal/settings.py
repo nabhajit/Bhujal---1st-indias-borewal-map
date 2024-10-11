@@ -103,6 +103,13 @@ WHITENOISE_USE_FINDERS = True  # Enable if you're using staticfiles finders
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+STORAGES = {
+    # ...
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
