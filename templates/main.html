@@ -1,0 +1,531 @@
+{% load static  %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head class="dark">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BHUJAL - Interactive Map</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static "images/logo.png" %}">
+    
+    <link rel="canonical" href="https://www.bhujal.tech/login.html">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="{% static "css/output.css" %}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
+    <style>
+        .show {
+            max-height: 1000px;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            transition: max-height 0.4s ease-in, padding 0.4s ease-in;
+        }
+
+        .accordion-content,
+        .advanced-options {
+            max-height: 0;
+            border: none;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        }
+
+        .accordion-content.show,
+        .advanced-options.show {
+            max-height: 1000px;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            transition: max-height 0.4s ease-in, padding 0.4s ease-in;
+        }
+
+        .estimate-button:focus {
+            outline: none;
+        }
+
+        .accordion-button:focus {
+            outline: none;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex overflow-hidden bg-slate-100">
+    <aside class="relative w-full sm:w-1/2 lg:w-1/3 h-full bg-white border shadow" id="aside">
+        <div id="main-wrapper" class="w-full h-full flex items-center overflow-x-hidden snap-x hide-scrollbar">
+            <!-- Step 2: Welcome, Area water level, Navigation buttons -->
+            <section id="step-2"
+                class="step h-full min-w-full p-4 flex flex-col justify-start snap-center shadow bg-gray-100 overflow-auto hide-scrollbar">
+
+                <h1 class="text-2xl mb-6">Welcome, <span id="user-name">{{customer.name}}</span></h1>
+
+                <section id="data-section" class="bg-white shadow-lg rounded-lg p-6 mb-6">
+                    <!-- Water Drop -->
+                    <div class="relative h-56 w-36 block mx-auto">
+                        <svg viewBox="0 0 200 300" class="drop">
+                            <!-- Define the clipPath with the water drop shape -->
+                            <clipPath id="waterDropClip">
+                                <path
+                                    d="M100,0 C50,75 0,150 0,225 C0,275 50,300 100,300 C150,300 200,275 200,225 C200,150 150,75 100,0 Z">
+                                </path>
+                            </clipPath>
+
+                            <!-- Use the clipPath on a rectangle or any other shape to create the clipped area -->
+                            <rect width="200" height="300" fill="#7dd3fc" clip-path="url(#waterDropClip)"></rect>
+
+                            <!-- First Wave-->
+                            <path class="wave" fill="#38bdf8" fill-opacity=".5"
+                                d="M0,220 Q60,180 120,230 T200,220 V300 H0 Z" clip-path="url(#waterDropClip)"></path>
+
+                            <!-- Second Wave -->
+                            <path class="wave" fill="#0ea5e9" fill-opacity="1"
+                                d="M0,240 Q50,190 110,240 T200,230 V300 H0 Z" clip-path="url(#waterDropClip)"></path>
+
+                        </svg>
+
+                        <!-- Water depth within the wave -->
+                        <div
+                            class="absolute inset-0 flex items-center justify-center text-white text-lg font-bold drop-shadow water-level">
+                            __.__ feet
+                        </div>
+
+                        <!-- Refresh button -->
+                        <div id="btn-refresh"
+                            class="absolute top-2 right-1 bg-blue-400 text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer border-4 border-blue-200">
+                            &#x21bb;
+                        </div>
+                    </div>
+
+
+
+                    <div class="flex mt-6 items-center justify-evenly bg-blue-50 border-4 border-blue-50">
+                        <div class="text-center w-full p-2">
+                            <h3 id="division-name" class="text-xl font-semibold">_</h3>
+                            <p class="text-gray-600">Division</p>
+                        </div>
+                        <div class="text-center w-full p-2 bg-white">
+                            <h3 id="zone-type" class="text-xl font-semibold text-green-600">_</h3>
+                            <p class="text-gray-600">Zone Type</p>
+                        </div>
+                    </div>
+
+
+                    <div class="accordion-item">
+                        <button id=""
+                            class="accordion-button w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 my-4">Monthly
+                            Max
+                            Depth Prediction</button>
+                        <div class="accordion-content">
+                            <div id="monthly-depth-container" class="overflow-auto hide-scrollbar flex space-x-4 py-2">
+                                <!-- Monthly depth data will be shown here -->
+                            </div>
+                            <div class="">
+                                <canvas id="myLineChart" class="w-full h-64 text-center my-6"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        class="advanced-button w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Advanced
+                        Options</button>
+                        <div class="advanced-options max-h-0 overflow-hidden transition-all duration-300">
+                            <form class="mt-4">
+                                <label class="block text-sm mb-2">Temperature (°C)</label>
+                                <input type="number" class="temperature-input w-full mb-2 p-2 border rounded" placeholder="Enter temperature">
+                        
+                                <label class="block text-sm mb-2">Precipitation (mm)</label>
+                                <input type="number" class="precipitation-input w-full mb-2 p-2 border rounded" placeholder="Enter precipitation">
+                        
+                                <label class="block text-sm mb-2">Month</label>
+                                <select class="month-dropdown w-full mb-2 p-2 border rounded">
+                                    <option value="01">January</option>
+                                    <option value="02">February</option>
+                                    <option value="03">March</option>
+                                    <option value="04">April</option>
+                                    <option value="05">May</option>
+                                    <option value="06">June</option>
+                                    <option value="07">July</option>
+                                    <option value="08">August</option>
+                                    <option value="09">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                        
+                                <!-- Location Button -->
+                                <label class="block text-sm mb-2">Location</label>
+                                <button type="button" class="location-button outline-none w-full py-2 px-0 rounded border flex justify-between px-2">
+                                    <p>Bilaspur</p>
+                                    <p>🗺️</p>
+                                </button>
+                        
+                                <button type="button" class="estimate-button focus:outline-none w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 mt-6">Estimate</button>
+                            </form>
+                            <p class="estimated-level text-sm mt-4 hidden">Estimated Water Level: <span class="font-bold"></span></p>
+                        </div>
+                        
+                        <!-- Location Popup -->
+                        <div class="location-popup fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden z-10">
+                            <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+                                <button type="button" class="close-popup absolute font-bold text-3xl top-4 right-6 text-gray-500 hover:text-gray-800">
+                                    &times;
+                                </button>
+
+                                <h2 class="text-lg font-semibold mb-4">Select Location</h2>
+                        
+                                <!-- State Dropdown -->
+                                <label class="block text-sm mb-2">State</label>
+                                <select class="state-dropdown w-full mb-2 p-2 border rounded">
+                                    <option value="">Select State</option>
+                                    <option value="KA">Karnataka</option>
+                                    <option value="MH">Maharashtra</option>
+                                    <option value="TN">Tamil Nadu</option>
+                                    <!-- Add more states as needed -->
+                                </select>
+                        
+                                <!-- District Dropdown -->
+                                <label class="block text-sm mb-2">District</label>
+                                <select class="district-dropdown w-full mb-2 p-2 border rounded">
+                                    <option value="">Select District</option>
+                                </select>
+                        
+                                <!-- Map Container -->
+                                <div id="map2" class="h-48 mt-4 border rounded"></div>
+                        
+                                <!-- Close Button -->
+                                <button type="button" class="close-popup focus:outline-none w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 mt-4">Done</button>
+                            </div>
+                        </div>    
+                </section>
+
+                <!-- Navigation Buttons -->
+                <div class="btn-back flex flex-col items-center gap-4 mb-6">
+                    <button id="btn-new-borewell"
+                        class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Mine
+                        a New Borewell</button>
+                    <button id="btn-borewell"
+                        class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Already
+                        Have a Borewell</button>
+                    <button id="btn-collaborate"
+                        class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Collaborate
+                        with Borewell Owners</button>
+                </div>
+            </section>
+
+            <!-- Step 3: Additional Steps within each navigation buttons -->
+            <section id="step-3" class="step h-full min-w-full snap-center shadow">
+
+                <section id="step-3-new-borewell"
+                    class="step h-full min-w-full p-4 flex flex-col align-items overflow-auto hide-scrollbar hidden">
+
+                    <!-- Back Button -->
+                    <div class="btn-back flex items-center gap-4 mb-4">
+                        <button
+                            class="carousel-prev relative h-10 w-10 flex items-center justify-center rounded-full border border-indigo-200 bg-white bg-opacity-60 transition-all ease-in-out duration-300 hover:bg-white  shadow-sm"
+                            id="left-scroll">
+                            <svg class="h-3 w-3 fill-slate-400 transition-all ease-in-out duration-300"
+                                viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.7 14.7l1.4-1.4L3.8 9H16V7H3.8l4.3-4.3-1.4-1.4L0 8z"></path>
+                            </svg>
+                        </button>
+                        <h2 class="text-xl">Mine a New Borewell</h2>
+                    </div>
+
+                    <!-- Section to display based on estimated water level -->
+                    <div class="mt-6">
+                        <!-- optimal range -->
+                        <div class="w-full h-auto hidden" id="optimal-range">
+                            <p class="text-green-500 text-sm mb-4">The estimated water level is within the optimal
+                                range.
+                            </p>
+                            <button
+                                class="proceed-resistivity w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 mb-4">Proceed
+                                with onground resistivity testing</button>
+                            <div
+                                class="resistivity-form border px-10 shadow-sm bg-gray-50 rounded max-h-0 overflow-hidden border-none transition-all duration-300 delay-200">
+                                <form>
+                                    <label class="block text-sm mb-2">Address</label>
+                                    <input type="text" class="w-full mb-2 p-2 border rounded"
+                                        placeholder="Enter your address">
+
+                                    <div class="flex justify-between mt-4">
+                                        <button type="button"
+                                            class="pay-now w-1/2 mr-2 bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Pay
+                                            Now</button>
+                                        <button type="button"
+                                            class="pay-volunteers w-1/2 ml-2 bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Pay
+                                            to Volunteers</button>
+                                    </div>
+                                </form>
+                                <p class="text-gray-500 text-xs mt-4">You are just one step away from setting up your
+                                    own
+                                    borewell.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- non-optimal range -->
+                        <div class="w-full h-auto hidden" id="non-optimal-range">
+                            <p class=" text-red-500 text-sm mb-4">The estimated water level is not within the optimal
+                                range.
+                            </p>
+                            <button
+                                class="collaborate w-full bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 mb-4">Collaborate
+                                with other borewell owners</button>
+                            <button
+                                class="continue-anyway w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 mb-4">Continue
+                                anyway</button>
+
+                            <!-- Borewell owners will be shown here -->
+                            <div
+                                class="collaborate-form max-h-0 border px-5 lg:px-10 shadow-sm bg-gray-50 overflow-hidden border-none transition-all duration-300 delay-200">
+                                <p class="text-sm mb-2">We found 3 borewell owners, within 300m ready to collaborate:
+                                </p>
+                                <div class="borewell-owners-container"></div>
+                                <button class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 mt-2">Find
+                                    more</button>
+                            </div>
+
+                            <div
+                                class="resistivity-form2 border px-10 shadow-sm bg-gray-50 rounded max-h-0 overflow-hidden border-none transition-all duration-300 delay-200">
+                                <form>
+                                    <label class="block text-sm mb-2">Address</label>
+                                    <input type="text" class="w-full mb-2 p-2 border rounded"
+                                        placeholder="Enter your address">
+
+                                    <div class="flex justify-between mt-4">
+                                        <button type="button"
+                                            class="pay-now w-1/2 mr-2 bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Pay
+                                            Now</button>
+                                        <button type="button"
+                                            class="pay-volunteers w-1/2 ml-2 bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Pay
+                                            to Volunteers</button>
+                                    </div>
+                                </form>
+                                <p class="text-gray-500 text-xs mt-4">You are one step away from setting up your own
+                                    borewell.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="step-3-borewell"
+                    class="step h-full min-w-full p-4 flex flex-col align-center overflow-auto hide-scrollbar hidden">
+
+                    <div class="btn-back flex items-center gap-4 mb-4">
+                        <button
+                            class="carousel-prev relative h-10 w-10 flex items-center justify-center rounded-full border border-indigo-200 bg-white bg-opacity-60 transition-all ease-in-out duration-300 hover:bg-white  shadow-sm"
+                            id="left-scroll">
+                            <svg class="h-3 w-3 fill-slate-400 transition-all ease-in-out duration-300"
+                                viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.7 14.7l1.4-1.4L3.8 9H16V7H3.8l4.3-4.3-1.4-1.4L0 8z"></path>
+                            </svg>
+                        </button>
+                        <h2 class="text-xl">Already Have a Borewell</h2>
+                    </div>
+
+
+                    <!-- First Button: Register/Edit Borewell details -->
+                    <div class="accordion-item">
+                        <button
+                            class="accordion-button focus:outline-none bg-blue-500 text-white w-full py-2 rounded mb-2 hover:bg-blue-600">
+                            Register/Edit Borewell details
+                        </button>
+                        <div
+                            class="accordion-content max-h-0 overflow-hidden transition-width duration-300 delay-200 show border px-10 shadow-sm bg-gray-50 rounded">
+                            <form id="borewellform" method="post" >
+                                {% csrf_token %}
+                                <label class="block text-sm mb-2">Latitude &amp; Longitude</label>
+                                <div class="flex items-center mb-2">
+                                    <input type="text" id="latitude" name="latitude" class="w-full p-2 border rounded mr-2" placeholder="Enter Latitude" required>
+                                    <input type="text" id="longitude" name="longitude" class="w-full p-2 border rounded mr-2" placeholder="Enter Longitude" required>
+                                    <button id="edit-lat-lng" class="bg-blue-500 text-white p-2 rounded" type="button">
+                                        <i class="fas fa-edit">+</i>
+                                    </button>
+                                </div>            
+
+                                <label class="block text-sm mb-2">Well Type</label>
+                                <select id="well-type" name="well-type" class="w-full mb-2 p-2 border rounded" >
+                                    <option disabled selected>Select Well Type</option>
+                                    <option value="dug-well">Dug Well</option>
+                                    <option value="drilled-well">Drilled/Tube Well</option>
+                                    <option value="driven-well">Driven Well</option>
+                                </select>
+
+                                <div id="dug-well-options" name="dug-well-options" class="hidden">
+                                    <label class="block text-sm mb-2">Depth Type</label>
+                                    <select id="dug-well" name="dug-well" class="w-full mb-2 p-2 border rounded" >
+                                        <option disabled selected>Select Depth Type</option>
+                                        <option value="shallow (20-30ft)">Shallow (20-30ft)</option>
+                                        <option value="deep (50-80ft)">Deep (50-80ft)</option>
+                                    </select>
+
+                                    <label class="block text-sm mb-2">Wall Type</label>
+                                    <select id="wall-type" name="wall-type" class="w-full mb-2 p-2 border rounded">
+                                        <option disabled selected>Select Wall Type</option>
+                                        <option value="kacha">Kacha</option>
+                                        <option value="impervious-lining">Impervious Lining</option>
+                                        <option value="pervious-lining">Pervious Lining</option>
+                                    </select>
+                                </div>
+
+                                <div id="drilled-well-options" class="hidden">
+                                    <label class="block text-sm mb-2">Depth Type</label>
+                                    <select id="drilled-well" name="drilled-well" class="w-full mb-2 p-2 border rounded">
+                                        <option disabled selected>Select Depth Type</option>
+                                        <option value="shallow (180-240ft)">Shallow (180-240ft)</option>
+                                        <option value="moderately-deep (360-420ft)">Moderately Deep (360-420ft)</option>
+                                        <option value="deep (>450ft)">Deep (>450ft)</option>
+                                    </select>
+
+                                    <label class="block text-sm mb-2">Supply System Type</label>
+                                    <select id="supply-system" name="supply-system" class="w-full mb-2 p-2 border rounded" >
+                                        <option disabled selected>Select Supply System Type</option>
+                                        <option value="strainer-type">Strainer Type</option>
+                                        <option value="cavity-type">Cavity Type</option>
+                                        <option value="not-sure">Not Sure</option>
+                                    </select>
+                                </div>
+
+                                <label class="block text-sm mb-2">Fill only if you know the exact depth</label>
+                                <input type="number" id="exact-depth" name="exact-depth" class="w-full mb-2 p-2 border rounded"
+                                    placeholder="Enter Exact Depth">
+
+                                <div class="flex items-start mb-2">
+                                    <input type="checkbox" id="motor-operated" name="motor-operated"
+                                        class="toggle-checkbox p-2 mt-1 border rounded cursor-pointer">
+                                    <label class="ml-2 text-sm">Is the borewell motor operated?</label>
+                                </div>
+
+                                <div class="flex items-start mb-2">
+                                    <input type="checkbox" id="authorities-aware" name="authorities-aware"
+                                        class="toggle-checkbox p-2 mt-1 border rounded cursor-pointer">
+                                    <label class="ml-2 text-sm">Are local authorities aware of this well?</label>
+                                </div>
+
+                                <textarea class="w-full mb-2 p-2 border rounded resize-none" id="description" name="description"
+                                    placeholder="Enter any additional information"></textarea>
+
+                                    <input type="text" id="cid" name="cid" value="{{customer.id}}" style="display:None;">
+                                <button type="submit" 
+                                    class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 mt-2">Save
+                                    Details</button>
+                            </form>
+                        </div>
+
+                    </div>
+
+                    <!-- Second Button: Share borewell & get paid -->
+                    <div class="accordion-item">
+                        <button
+                            class="accordion-button focus:outline-none bg-blue-500 text-white w-full py-2 rounded mb-2 hover:bg-blue-600">
+                            Share borewell & get paid
+                        </button>
+                        <div
+                            class="accordion-content max-h-0 overflow-hidden transition-all duration-300 delay-200 border px-10 shadow-sm bg-gray-50 rounded">
+                            <p class="text-sm mb-4">You can share your borewell water with others and get paid. Set your
+                                rates and availability.</p>
+                            <form>
+                                <!-- Content for sharing borewell -->
+                                <label class="block text-sm mb-2">Rate per Hour</label>
+                                <input type="number" class="w-full mb-2 p-2 border rounded"
+                                    placeholder="Enter rate per hour">
+
+                                <label class="block text-sm mb-2">Available Hours</label>
+                                <input type="text" class="w-full mb-2 p-2 border rounded"
+                                    placeholder="Enter available hours">
+
+                                <button type="submit" id="share-borewell-to-earn"
+                                    class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 mt-2">Set
+                                    Sharing
+                                    Details</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Third Button: Set critical level alerts -->
+                    <div class="accordion-item">
+                        <button
+                            class="accordion-button focus:outline-none bg-blue-500 text-white w-full py-2 rounded mb-2 hover:bg-blue-600">
+                            Set critical level alerts
+                        </button>
+                        <div
+                            class="accordion-content max-h-0 overflow-hidden transition-all duration-300 delay-200  border px-10 shadow-sm bg-gray-50 rounded">
+                            <p class="text-sm mb-4">Set alerts to notify you when the water level in your borewell
+                                reaches
+                                critical levels.</p>
+                            <form>
+                                <!-- Content for setting alerts -->
+                                <label class="block text-sm mb-2">Critical Level (in meters)</label>
+                                <input type="number" class="w-full mb-2 p-2 border rounded"
+                                    placeholder="Enter critical level">
+
+                                <label class="block text-sm mb-2">Alert Method</label>
+                                <select class="w-full mb-2 p-2 border rounded">
+                                    <option>Email</option>
+                                    <option>SMS</option>
+                                    <option>App Notification</option>
+                                </select>
+
+                                <button type="submit" id="set-critical-level-alert"
+                                    class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 mt-2">Set
+                                    Alert</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </section>
+
+                <section id="step-3-collaborate"
+                    class="step h-full min-w-full p-4 flex flex-col align-center overflow-auto hide-scrollbar hidden">
+
+                    <!-- Back Button -->
+                    <div class="btn-back flex items-center gap-4 mb-4">
+                        <button
+                            class="carousel-prev relative h-10 w-10 flex items-center justify-center rounded-full border border-indigo-200 bg-white bg-opacity-60 transition-all ease-in-out duration-300 hover:bg-white  shadow-sm"
+                            id="left-scroll">
+                            <svg class="h-3 w-3 fill-slate-400 transition-all ease-in-out duration-300"
+                                viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.7 14.7l1.4-1.4L3.8 9H16V7H3.8l4.3-4.3-1.4-1.4L0 8z"></path>
+                            </svg>
+                        </button>
+                        <h2 class="text-xl">Collaborate with Borewell Owners</h2>
+                    </div>
+
+                    <!-- Borewell owners will be shown here -->
+                    <div class="border px-5 lg:px-10 py-5 shadow-sm bg-gray-50 overflow-hidden">
+                        <p class="text-sm mb-2">We found 3 borewell owners, within 300m ready to collaborate:</p>
+                        <div class="borewell-owners-container"></div>
+                        <button class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 mt-2">Find
+                            more</button>
+                    </div>
+
+                </section>
+
+            </section>
+        </div>
+    </aside>
+
+    <main class="w-0 sm:w-1/2 lg:w-2/3 h-full relative" id="right-div">
+        <div id="map" class=" absolute inset-0 h-full w-full -z-0"></div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.2/dist/chart.umd.js"
+        integrity="sha384-eI7PSr3L1XLISH8JdDII5YN/njoSsxfbrkCTnJrzXt+ENP5MOVBxD+l6sEG4zoLp"
+        crossorigin="anonymous"></script>
+    <script>
+        window.STATIC_URLS = {
+            iconUrl1: "{% static 'images/borewell1.png' %}",
+            shadowUrl1: "{% static 'images/borewell-shadow1.png' %}",
+
+            iconUrl2: "{% static 'images/borewell2.png' %}",
+            shadowUrl2: "{% static 'images/borewell-shadow2.png' %}"
+        };
+    </script>
+    <script type="module" src="{% static "js/main.js"%}"></script>
+</body>
+
+</html>

@@ -1,0 +1,243 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head class="dark">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BHUJAL - Login</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static "images/logo.png" %}">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="{% static "css\output.css" %}">
+    <link rel="canonical" href="https://www.bhujal.tech/login.html">
+</head>
+
+<body class="h-screen flex overflow-hidden bg-slate-100">
+    <aside
+        class="w-full sm:w-1/2 lg:w-1/3 h-full bg-white relative flex items-center overflow-x-hidden snap-x hide-scrollbar border shadow">
+
+        <!-- Step 1: Login/Signup -->
+        <section id="step-1"
+            class="step h-full min-w-full flex flex-col align-center snap-y snap-center shadow overflow-hidden hide-scrollbar">
+            <section
+                class="min-h-full w-full p-4 flex flex-col align-center snap-center overflow-auto hide-scrollbar shadow">
+                <h2 class="text-xl mb-4">Login</h2>
+                <div class="mt-8">
+                    <form id="login-form" action="/login/" method="post">
+                        {% csrf_token %}
+                        <div>
+                            <label for="email" class="block mb-2 text-sm text-gray-600">Email
+                                Address</label>
+                            <input type="email" name="email" id="login-email" placeholder="example@example.com"
+                                autocomplete="username"
+                                class="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+                                required />
+                        </div>
+
+                        <div class="mt-6">
+                            <div class="flex justify-between mb-2">
+                                <label for="password" class="text-sm text-gray-600">Password</label>
+                                <a href="#"
+                                    class="text-sm text-gray-400 focus:text-blue-500 hover:text-blue-500 hover:underline">Forgot
+                                    password?</a>
+                            </div>
+
+                            <input type="password" name="password" id="login-password" placeholder="Your Password"
+                                autocomplete="current-password"
+                                class="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+                                required />
+                        </div>
+
+                        <div class="mt-6">
+                            
+                                <button type="submit"
+                                    class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+                                    id="btn-login">Login</button>
+                            
+
+                            <p class="mt-4 text-center text-gray-600">or sign in with</p>
+
+                            <a href="#"
+                                class="flex items-center justify-center px-6 py-3 mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg hover:bg-gray-50">
+                                <svg class="w-6 h-6 mx-2" viewBox="0 0 40 40">
+                                    <path
+                                        d="M36.3425 16.7358H35V16.6667H20V23.3333H29.4192C28.045 27.2142 24.3525 30 20 30C14.4775 30 10 25.5225 10 20C10 14.4775 14.4775 9.99999 20 9.99999C22.5492 9.99999 24.8683 10.9617 26.6342 12.5325L31.3483 7.81833C28.3717 5.04416 24.39 3.33333 20 3.33333C10.7958 3.33333 3.33335 10.7958 3.33335 20C3.33335 29.2042 10.7958 36.6667 20 36.6667C29.2042 36.6667 36.6667 29.2042 36.6667 20C36.6667 18.8825 36.5517 17.7917 36.3425 16.7358Z"
+                                        fill="#FFC107" />
+                                    <path
+                                        d="M5.25497 12.2425L10.7308 16.2583C12.2125 12.59 15.8008 9.99999 20 9.99999C22.5491 9.99999 24.8683 10.9617 26.6341 12.5325L31.3483 7.81833C28.3716 5.04416 24.39 3.33333 20 3.33333C13.5983 3.33333 8.04663 6.94749 5.25497 12.2425Z"
+                                        fill="#FF3D00" />
+                                    <path
+                                        d="M20 36.6667C24.305 36.6667 28.2167 35.0192 31.1742 32.34L26.0159 27.975C24.3425 29.2425 22.2625 30 20 30C15.665 30 11.9842 27.2359 10.5975 23.3784L5.16254 27.5659C7.92087 32.9634 13.5225 36.6667 20 36.6667Z"
+                                        fill="#4CAF50" />
+                                    <path
+                                        d="M36.3425 16.7358H35V16.6667H20V23.3333H29.4192C28.7592 25.1975 27.56 26.805 26.0133 27.9758C26.0142 27.975 26.015 27.975 26.0158 27.9742L31.1742 32.3392C30.8092 32.6708 36.6667 28.3333 36.6667 20C36.6667 18.8825 36.5517 17.7917 36.3425 16.7358Z"
+                                        fill="#1976D2" />
+                                </svg>
+
+                                <span class="mx-2">Sign in with Google</span>
+                            </a>
+                        </div>
+
+                    </form>
+
+                    <p class="mt-6 text-sm text-center text-gray-400">Don't have an account yet? <u
+                            class="text-blue-500 focus:outline-none focus:underline hover:underline cursor-pointer"
+                            id="sign-up-text">Sign up</u>.
+                    </p>
+                </div>
+            </section>
+            <section
+                class="min-h-full w-full p-4 flex flex-col align-center snap-center overflow-auto hide-scrollbar shadow">
+                <h2 class="text-xl mb-4">Sign Up</h2>
+                <div class="mt-8">
+                    <form id="signup-form" action="/signup/" method="post">
+                        {% csrf_token %}
+                        <div>
+                            <label for="name" class="block mb-2 text-sm text-gray-600">Name</label>
+                            <input type="text" name="name" id="name" placeholder="Your Full Name"
+                                class="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+                                required />
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="email" class="block mb-2 text-sm text-gray-600">Email Address</label>
+                            <input type="email" name="email" id="email" placeholder="example@example.com"
+                                autocomplete="username"
+                                class="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+                                required />
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="phone" class="block mb-2 text-sm text-gray-600">Phone Number</label>
+                            <input type="tel" name="phone" id="phone" placeholder="+1234567890"
+                                class="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+                                required />
+                        </div>
+
+                        <div>
+                            <label for="address" class="block mb-2 text-sm text-gray-600">Address</label>
+                            <input type="text" name="address" id="address" placeholder="Your Address"
+                                class="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+                                 />
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="password" class="block mb-2 text-sm text-gray-600">Password</label>
+                            <input type="password" name="password" id="password" placeholder="Your Password"
+                                autocomplete="new-password"
+                                class="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+                                required />
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="confirm-password" class="block mb-2 text-sm text-gray-600">Confirm
+                                Password</label>
+                            <input type="password" name="confirm-password" id="confirm-password"
+                                placeholder="Confirm Your Password" autocomplete="new-password"
+                                class="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+                                required />
+                        </div>
+
+                        <div class="mt-6">
+                            
+                                <button type="submit"
+                                    class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+                                    id="btn-sign-up">
+                                    Sign Up
+                                </button>
+                            
+                            <p class="mt-4 text-center text-gray-600">or sign up with</p>
+
+                            <a href="#"
+                                class="flex items-center justify-center px-6 py-3 mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg hover:bg-gray-50">
+                                <svg class="w-6 h-6 mx-2" viewBox="0 0 40 40">
+                                    <path
+                                        d="M36.3425 16.7358H35V16.6667H20V23.3333H29.4192C28.045 27.2142 24.3525 30 20 30C14.4775 30 10 25.5225 10 20C10 14.4775 14.4775 9.99999 20 9.99999C22.5492 9.99999 24.8683 10.9617 26.6342 12.5325L31.3483 7.81833C28.3717 5.04416 24.39 3.33333 20 3.33333C10.7958 3.33333 3.33335 10.7958 3.33335 20C3.33335 29.2042 10.7958 36.6667 20 36.6667C29.2042 36.6667 36.6667 29.2042 36.6667 20C36.6667 18.8825 36.5517 17.7917 36.3425 16.7358Z"
+                                        fill="#FFC107" />
+                                    <path
+                                        d="M5.25497 12.2425L10.7308 16.2583C12.2125 12.59 15.8008 9.99999 20 9.99999C22.5491 9.99999 24.8683 10.9617 26.6341 12.5325L31.3483 7.81833C28.3716 5.04416 24.39 3.33333 20 3.33333C13.5983 3.33333 8.04663 6.94749 5.25497 12.2425Z"
+                                        fill="#FF3D00" />
+                                    <path
+                                        d="M20 36.6667C24.305 36.6667 28.2167 35.0192 31.1742 32.34L26.0159 27.975C24.3425 29.2425 22.2625 30 20 30C15.665 30 11.9842 27.2359 10.5975 23.3784L5.16254 27.5659C7.92087 32.9634 13.5225 36.6667 20 36.6667Z"
+                                        fill="#4CAF50" />
+                                    <path
+                                        d="M36.3425 16.7358H35V16.6667H20V23.3333H29.4192C28.7592 25.1975 27.56 26.805 26.0133 27.9758C26.0142 27.975 26.015 27.975 26.0158 27.9742L31.1742 32.3392C30.8092 32.6708 36.6667 28.3333 36.6667 20C36.6667 18.8825 36.5517 17.7917 36.3425 16.7358Z"
+                                        fill="#1976D2" />
+                                </svg>
+
+                                <span class="mx-2">Sign up with Google</span>
+                            </a>
+                        </div>
+                    </form>
+
+                    <p class="mt-6 text-sm text-center text-gray-400">Already have an account?
+                        <u class="text-blue-500 focus:outline-none focus:underline hover:underline cursor-pointer"
+                            id="login-text">Login</u>.
+                    </p>
+                </div>
+            </section>
+
+        </section>
+    </aside>
+
+    <main class="w-0 sm:w-1/2 lg:w-2/3  h-full relative" id="right-div">
+        <div id="map" class=" absolute inset-0 h-full w-full -z-0"></div>
+        <div id="overlay"
+            class="absolute inset-0 h-full w-full z-0 flex flex-col justify-center bg-gray-100 bg-opacity-55 backdrop-blur-sm p-20 gap-10 transform-all duration-500 delay-200">
+            <h1 class="absolute top-10 left-20 text-2xl font-bold text-gray-900">Bhujal</h1>
+            <div class="h-60 overflow-hidden">
+                <!-- <img src="images/handpump.webp" alt="" class="object-contain"> -->
+            </div>
+            <h3 class="text-2xl font-semibold">
+                Join <span class="text-blue-600 font-extrabold tracking-wide leading-loose">1000+</span> Individuals
+                who Trust Bhujal to Manage their Groundwater Resources
+            </h3>
+            <div class="flex gap-6">
+                <div class="flex items-center space-x-2">
+                    <svg aria-hidden="true" height="16px" viewBox="0 0 24 24" width="16px" fill="none" class="w-5 h-5">
+                        <path
+                            d="M4.15845 7.14673C6.74812 4.11682 11.0222 3.15114 14.663 4.77337C15.1675 4.99815 15.7586 4.77141 15.9834 4.26694C16.2082 3.76247 15.9815 3.17129 15.477 2.94651C11.0272 0.963789 5.80325 2.14407 2.6381 5.84729C-0.527049 9.55051 -0.879431 14.8945 1.77205 18.9813C4.42353 23.0681 9.44725 24.9241 14.1189 23.5428C18.7905 22.1615 21.9972 17.8715 22 12.9999V12.0699C22 11.5177 21.5523 11.0699 21 11.0699C20.4477 11.0699 20 11.5177 20 12.0699V12.9994C19.9977 16.9852 17.3741 20.4948 13.5518 21.6249C9.72957 22.755 5.61926 21.2364 3.44986 17.8927C1.28047 14.549 1.56878 10.1766 4.15845 7.14673Z"
+                            fill="black"></path>
+                        <path
+                            d="M22.7071 4.70705C23.0976 4.31652 23.0976 3.68336 22.7071 3.29283C22.3166 2.90231 21.6834 2.90231 21.2929 3.29283L11 13.5857L8.70711 11.2928C8.31658 10.9023 7.68342 10.9023 7.29289 11.2928C6.90237 11.6834 6.90237 12.3165 7.29289 12.707L10.2929 15.707C10.6834 16.0976 11.3166 16.0976 11.7071 15.707L22.7071 4.70705Z"
+                            fill="black"></path>
+                    </svg>
+                    <h6 class="text-md font-semibold">100+ Reviews</h6>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <svg aria-hidden="true" height="16px" viewBox="0 0 24 24" width="16px" fill="none" class="w-5 h-5">
+                        <path
+                            d="M4.15845 7.14673C6.74812 4.11682 11.0222 3.15114 14.663 4.77337C15.1675 4.99815 15.7586 4.77141 15.9834 4.26694C16.2082 3.76247 15.9815 3.17129 15.477 2.94651C11.0272 0.963789 5.80325 2.14407 2.6381 5.84729C-0.527049 9.55051 -0.879431 14.8945 1.77205 18.9813C4.42353 23.0681 9.44725 24.9241 14.1189 23.5428C18.7905 22.1615 21.9972 17.8715 22 12.9999V12.0699C22 11.5177 21.5523 11.0699 21 11.0699C20.4477 11.0699 20 11.5177 20 12.0699V12.9994C19.9977 16.9852 17.3741 20.4948 13.5518 21.6249C9.72957 22.755 5.61926 21.2364 3.44986 17.8927C1.28047 14.549 1.56878 10.1766 4.15845 7.14673Z"
+                            fill="black"></path>
+                        <path
+                            d="M22.7071 4.70705C23.0976 4.31652 23.0976 3.68336 22.7071 3.29283C22.3166 2.90231 21.6834 2.90231 21.2929 3.29283L11 13.5857L8.70711 11.2928C8.31658 10.9023 7.68342 10.9023 7.29289 11.2928C6.90237 11.6834 6.90237 12.3165 7.29289 12.707L10.2929 15.707C10.6834 16.0976 11.3166 16.0976 11.7071 15.707L22.7071 4.70705Z"
+                            fill="black"></path>
+                    </svg>
+                    <h6 class="text-md font-semibold">Easy Integration</h6>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <svg aria-hidden="true" height="16px" viewBox="0 0 24 24" width="16px" fill="none" class="w-5 h-5">
+                        <path
+                            d="M4.15845 7.14673C6.74812 4.11682 11.0222 3.15114 14.663 4.77337C15.1675 4.99815 15.7586 4.77141 15.9834 4.26694C16.2082 3.76247 15.9815 3.17129 15.477 2.94651C11.0272 0.963789 5.80325 2.14407 2.6381 5.84729C-0.527049 9.55051 -0.879431 14.8945 1.77205 18.9813C4.42353 23.0681 9.44725 24.9241 14.1189 23.5428C18.7905 22.1615 21.9972 17.8715 22 12.9999V12.0699C22 11.5177 21.5523 11.0699 21 11.0699C20.4477 11.0699 20 11.5177 20 12.0699V12.9994C19.9977 16.9852 17.3741 20.4948 13.5518 21.6249C9.72957 22.755 5.61926 21.2364 3.44986 17.8927C1.28047 14.549 1.56878 10.1766 4.15845 7.14673Z"
+                            fill="black"></path>
+                        <path
+                            d="M22.7071 4.70705C23.0976 4.31652 23.0976 3.68336 22.7071 3.29283C22.3166 2.90231 21.6834 2.90231 21.2929 3.29283L11 13.5857L8.70711 11.2928C8.31658 10.9023 7.68342 10.9023 7.29289 11.2928C6.90237 11.6834 6.90237 12.3165 7.29289 12.707L10.2929 15.707C10.6834 16.0976 11.3166 16.0976 11.7071 15.707L22.7071 4.70705Z"
+                            fill="black"></path>
+                    </svg>
+                    <h6 class="text-md font-semibold">Powerful Dashboard</h6>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="{% static "js\login.js" %}"></script>
+</body>
+
+</html>

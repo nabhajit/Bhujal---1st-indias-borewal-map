@@ -1,0 +1,108 @@
+/* input.css */
+@keyframes slide {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .animate-slide {
+        animation: slide 25s linear infinite;
+    }
+}
+
+@layer utilities {
+    .animate-paused {
+        animation-play-state: paused;
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+* {
+    /* font-family: 'Calibri', sans-serif; */
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* outline: none; */
+    /* border: 0; */
+    text-decoration: none;
+    list-style: none;
+    transition: all .4s ease-out;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    /* cursor: none; */
+    user-select: text;
+}
+
+.marquee {
+    animation: marquee 10s linear infinite;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+
+@keyframes scrollLeft {
+    to {
+        left: -200px;
+    }
+}
+
+.item {
+    animation: scrollLeft 30s linear infinite;
+}
+
+
+@keyframes scrollUp {
+    to {
+        bottom: 100%;
+    }
+}
+
+@keyframes scrollDown {
+    to {
+        top: 100%;
+    }
+}
+
+.scrollUp {
+    animation: scrollUp 16s linear infinite;
+}
+
+.scrollDown {
+    animation: scrollDown 16s linear infinite;
+}
+
+.item9 {
+    animation-delay: calc(16s / 4 * (4 - 1) * -1);
+}
+
+.item10 {
+    animation-delay: calc(16s / 4 * (4 - 2) * -1);
+}
+
+.item11 {
+    animation-delay: calc(16s / 4 * (4 - 3) * -1);
+}
+
+.item12 {
+    animation-delay: calc(16s / 4 * (4 - 4) * -1);
+}

@@ -1,0 +1,49 @@
+# Python related files
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.pyo
+
+# Django related files
+*.log
+*.pot
+*.pyc
+*.pyo
+
+# Ignore migrations (optional, if not keeping migration files in version control)
+**/migrations/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Ignore virtual environments
+venv/
+env/
+ENV/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Node.js related files (if using any JS in the project)
+node_modules/
+
+# Static and media files (if you generate these files locally and not uploading them)
+staticfiles/
+media/
+
+# Ignore OS and editor specific files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Ignore other unnecessary files
+*.bak
+*.swp
+*.tmp
