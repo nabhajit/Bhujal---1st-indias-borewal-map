@@ -9,14 +9,17 @@ urlpatterns = [
     path('', include('home.urls')),
 ]
 
-# Serve media files in development
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# # Serve media files in development
+# if settings.DEBUG:
+#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     
-    # Serve static files in development
+#     # Serve static files in development
+#     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# else:
+#     # Optionally, you can add a fallback for production if needed (not recommended for serving static files)
+#     urlpatterns += [
+#         re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
+#     ]
+
+if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-else:
-    # Optionally, you can add a fallback for production if needed (not recommended for serving static files)
-    urlpatterns += [
-        re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
-    ]

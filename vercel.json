@@ -30,5 +30,6 @@
             "src": "/(.*)",
             "dest": "bhujal/wsgi.py"
         }
-    ]
+    ],
+    "outputDirectory": "staticfiles"
 }
