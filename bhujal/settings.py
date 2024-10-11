@@ -145,7 +145,8 @@ if DEBUG:
     STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 else:
     # In production, this is where collectstatic will gather all the static files
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # This is where media files (uploaded by users) are stored
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
