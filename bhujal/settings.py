@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-@j@5&_qx3pg*c42tx3xt^3uu&%$t=fag95isy0@+vh2$42_$%^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1', '.vercel.app', '.now.sh', 'www.bhujal.tech', 'bhujal.tech',]
 
@@ -82,6 +82,15 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'railway',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'qUZGDhWqSQZFPcrvxLWGAouXuZvbbEfu',
+    #     'HOST': 'postgres.railway.internal',
+    #     'PORT': '5432',
+    # }
 }
 
 
@@ -107,8 +116,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 LANGUAGE_CODE = 'en-us'
 
@@ -123,8 +132,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 
-STATIC_URL = '/static/'  # URL for static files
-MEDIA_URL = '/media/'  # URL for media files
+STATIC_URL = 'static/'  # URL for static files
+MEDIA_URL = 'media/'  # URL for media files
 
 if DEBUG:
     # This tells Django where your static files are stored locally during development
