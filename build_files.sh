@@ -1,7 +1,7 @@
 echo "BUILD START"
 
-# python3.9 -m venv venv
-# source venv/bin/activate
+python3.9 -m venv venv
+source venv/bin/activate
 
 # /vercel/path0/venv/bin/python3.9 -m pip install --upgrade pip
 
