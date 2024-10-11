@@ -132,8 +132,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 
-STATIC_URL = 'static/'  # URL for static files
-MEDIA_URL = 'media/'  # URL for media files
+STATIC_URL = '/static/'  # URL for static files
+MEDIA_URL = '/media/'  # URL for media files
 
 if DEBUG:
     # This tells Django where your static files are stored locally during development
