@@ -1,31 +1,42 @@
 from django.shortcuts import render,redirect
 from .models import *
 from django.contrib.auth.hashers import make_password, check_password
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 def home(request):
-    return render(request,'index.html')
+    # Add debug print
+    print("Home view called")
+    try:
+        return render(request, 'index.html')
+    except Exception as e:
+        print(f"Error rendering home page: {e}")
+        return HttpResponse("Error loading home page")
 
 def login(request):
     if request.method == "POST":
-        email=request.POST.get('email')
-        password=request.POST.get('password')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        print(f"Login attempt for email: {email}")  # Debug print
 
-        customer=Customer.objects.filter(email=email)
+        customer = Customer.objects.filter(email=email)
 
         if not customer.exists():
-            print("email not registered")
+            print("Email not registered")  # Debug print
             return redirect('/signup')
         else:
-            customer=Customer.objects.get(email=email)
-            password_correct=check_password(password,customer.password)
+            customer = Customer.objects.get(email=email)
+            password_correct = check_password(password, customer.password)
+            print(f"Password correct: {password_correct}")  # Debug print
             if password_correct:
-                return redirect(f'/main/{customer.id}')
+                redirect_url = f'/main/{customer.id}'
+                print(f"Redirecting to: {redirect_url}")  # Debug print
+                return redirect(redirect_url)
             else:
-                print('password is incorrrect')
+                print('Password is incorrect')  # Debug print
+                return redirect('/login')
 
-    return render(request,'login.html')
+    return render(request, 'login.html')
 
 def signup(request):
     if request.method == "POST":
@@ -139,4 +150,9 @@ def get_borewell_owners(request):
         return JsonResponse(response_data, safe=False)
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+def logout(request):
+    # Clear all session data
+    request.session.flush()
+    return redirect('/login')
     

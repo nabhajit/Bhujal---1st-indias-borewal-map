@@ -31,6 +31,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'home.middleware.AuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'bhujal.urls'
@@ -125,3 +126,9 @@ LOGGING = {
         },
     },
 }
+
+# Add these session settings
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 86400  # 24 hours in seconds
+SESSION_COOKIE_SECURE = True  # Use only with HTTPS
+SESSION_COOKIE_HTTPONLY = True
