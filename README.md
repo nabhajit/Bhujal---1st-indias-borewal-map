@@ -193,8 +193,8 @@ REACT_APP_API_URL=your_backend_api_url
 You can view the project presentation here:  
 [Bhujal MERN Stack Presentation](https://www.canva.com/design/DAGV3RQar8U/hZFh_3RmuGtBKnQAmCBnmA/edit?utm_content=DAGV3RQar8U&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
-## Software demo link
-https://youtu.be/8MSGsJS4N-I?si=CU0-4m5uUJTp44qL
+You can view the software demo here:  
+[Bhujal SFT ](https://youtu.be/8MSGsJS4N-I?si=CU0-4m5uUJTp44qL)
 
 ## Contributing
 
